@@ -68,7 +68,7 @@ require_once $_SERVER["DOCUMENT_ROOT"] . "/settings.php";
 			<button class="w-100 btn btn-lg btn-primary" type="submit">Зарегистрироваться</button>
 		</form>
 		<div class="spinner-border text-dark" id="formLoader" style="display: none;" role="status">
-			<span class="visually-hidden">Регистрируем...</span>
+			<span class="visually-hidden">Загрузка...</span>
 		</div>
 		<p class="mt-5 mb-3 text-body-secondary">© 2023</p>
 	</div>
