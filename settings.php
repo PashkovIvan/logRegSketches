@@ -53,48 +53,38 @@ function sendResponse($response, array $unsetFields = [])
 
 function findUserByEmail(string $email): ?array
 {
-    $users = [
-        [
-            "id" => "1",
-            "name" => "Коля",
-            "email" => "nikolay@mail.ru",
-            "password" => hashPassword("nikolay@mail.ru"),
-        ],
-        [
-            "id" => "12",
-            "name" => "Гриша",
-            "email" => "gregory@mail.ru",
-            "password" => hashPassword("gregory@mail.ru"),
-        ],
-        [
-            "id" => "13",
-            "name" => "Петя",
-            "email" => "petrovich@gmail.com",
-            "password" => hashPassword("petrovich@gmail.com"),
-        ],
-        [
-            "id" => "15",
-            "name" => "Витя",
-            "email" => "vitok@mail.ru",
-            "password" => hashPassword("vitok@mail.ru"),
-        ],
-        [
-            "id" => "115",
-            "name" => "Андрей",
-            "email" => "andy@gmail.com",
-            "password" => hashPassword("andy@gmail.com"),
-        ],
-    ];
 
-    foreach ($users as $user) {
-        if ($user["email"] === $email) {
-            return $user;
-        }
-    }
-    return null;
+    $connection = DataBase::getConnection();
+    $stmt = $connection->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
+
+    return empty($user) ? null : $user;
 }
 
-function hashPassword(string $password):string
+class DataBase
 {
-    return hash("murmur3a",$password, true, ["seed" => HASH_SALT]);
+    private static DataBase $dataBase;
+    private mysqli $connection;
+
+    private function __construct()
+    {
+        $this->connection = mysqli_connect("localhost", "app", "app", "local_app_db");
+        if (mysqli_connect_errno()) {
+            echo "Failed to connect to MySQL:" . mysqli_connect_error();
+        } else {
+            $this->connection->query('USE local_app_db;');
+        }
+    }
+
+    public static function getConnection(): mysqli
+    {
+        if (empty(self::$dataBase)) {
+            self::$dataBase = new DataBase();
+        }
+        return self::$dataBase->connection;
+    }
 }

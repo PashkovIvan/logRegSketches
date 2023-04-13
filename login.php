@@ -28,7 +28,7 @@ $userFormDB = findUserByEmail($_POST[EMAIL_INPUT_NAME]);
 if (empty($userFormDB)) {
     $response["success"] = false;
     $response["messages"][] = "Неправильно указана почта";
-} elseif (hashPassword($_POST[PASSWORD_INPUT_NAME]) !== $userFormDB["password"]) {
+} elseif (hash('sha256', $_POST[PASSWORD_INPUT_NAME]) !== $userFormDB["password"]) {
     $response["success"] = false;
     $response["messages"][] = "Неправильно указан пароль";
 }
